@@ -1,5 +1,5 @@
 <?php
-namespace asbamboo\http\Test;
+namespace asbamboo\http\_test;
 
 use PHPUnit\Framework\TestCase;
 use asbamboo\http\Uri;
