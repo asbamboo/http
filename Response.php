@@ -135,6 +135,44 @@ class Response implements ResponseInterface
     }
 
     /**
+     * 发送header到客户端
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ResponseInterface::sendHeaders()
+     */
+    public function sendHeaders() : void
+    {
+        header(sprintf('HTTP/%s %s %s', $this->version, $this->status_code, $this->getReasonPhrase()), true, $this->status_code);
+
+        foreach($this->getHeaders() AS $name => $values ){
+            foreach((array)$values as $value) {
+                header($name.': '.$value, false, $this->status_code);
+            }
+        }
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ResponseInterface::sendContent()
+     */
+    public function sendContent() : void
+    {
+        echo $this->getBody();
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ResponseInterface::send()
+     */
+    public function send() : void
+    {
+        $this->sendHeaders();
+        $this->sendContent();
+    }
+
+    /**
      *
      * {@inheritDoc}
      * @see \asbamboo\http\psr\PsrResponseInterface::withStatus()

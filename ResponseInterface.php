@@ -82,4 +82,20 @@ interface ResponseInterface extends MessageInterface,PsrResponseInterface
     const STATUS_LOOP_DETECTED = 508;
     const STATUS_NOT_EXTENDED = 510;
     const STATUS_NETWORK_AUTHENTICATION_REQUIRED = 511;
+
+    /**
+     * 发送消息头
+     */
+    public function sendHeaders() : void;
+
+    /**
+     * 发送消息主体
+     */
+    public function sendContent() : void;
+
+    /**
+     * 发送消息头
+     * 并且发送消息发送消息主题
+     */
+    public function send() : void;
 }
