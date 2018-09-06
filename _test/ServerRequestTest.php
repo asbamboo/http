@@ -3,7 +3,6 @@ namespace asbamboo\http\_test;
 
 use PHPUnit\Framework\TestCase;
 use asbamboo\http\ServerRequest;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * test ServerRequest

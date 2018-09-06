@@ -2,7 +2,6 @@
 namespace asbamboo\http;
 
 use asbamboo\http\psr\Message AS BaseMessage;
-use asbamboo\http\traits\MessageTrait;
 
 /**
  * 实现MessageInterface
