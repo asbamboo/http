@@ -22,7 +22,7 @@ class RedirectResponse extends Response
      * @param int $status_code
      * @param string $version
      */
-    public function __construct(string $target_uri, int $status_code = self::STATUS_FOUND, string $version = '1.1')
+    public function __construct(string $target_uri, int $status_code = Constant::STATUS_FOUND, string $version = '1.1')
     {
         $this->setTargetUri($target_uri);
         $this->status_code  = $status_code;
@@ -38,9 +38,8 @@ class RedirectResponse extends Response
     public function setTargetUri(string $target_uri) : self
     {
         $this->target_uri           = $target_uri;
-        $this->headers['location']  = [$target_uri];
-        $this->Body                 = new Stream('php://temp', 'w+b');
-        $this->Body->write(sprintf('
+        $this->addHeader('location', $target_uri);
+        $this->setBody(new Stream('php://temp', 'w+b'))->getBody()->write(sprintf('
             <!DOCTYPE html>
             <html>
                 <head>
@@ -53,8 +52,8 @@ class RedirectResponse extends Response
                     Redirecting to <a href="%1$s">%1$s</a>.
                 </body>
             </html>',
-            htmlspecialchars($target_uri, ENT_QUOTES, 'UTF-8'))
-        );
+            htmlspecialchars($target_uri, ENT_QUOTES, 'UTF-8')
+        ));
         return $this;
     }
 

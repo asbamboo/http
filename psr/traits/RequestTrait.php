@@ -1,10 +1,14 @@
 <?php
-namespace asbamboo\http\traits;
+namespace asbamboo\http\psr\traits;
 
-use asbamboo\http\UriInterface;
-use asbamboo\http\psr\PsrRequestInterface;
-use asbamboo\http\psr\PsrUriInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 
+/**
+ *
+ * @author 李春寅 <licy2013@aliyun.com>
+ * @since 2018年9月6日
+ */
 trait RequestTrait
 {
     use MessageTrait;
@@ -31,14 +35,17 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::getRequestTarget()
+     * @see RequestInterface::getRequestTarget()
      *
      * @return string
      */
     public function getRequestTarget(): string
     {
         if(is_null($this->request_target)){
-            $this->request_target   = $this->Uri->getPath() . ($this->Uri->getQuery() ? '?' : '' ) . $this->Uri->getQuery() . ($this->Uri->getFragment() ? '#' : '') . $this->Uri->getFragment();
+            $this->request_target   = $this->Uri->getPath() . ($this->Uri->getQuery() ? '?' : '' );
+            $this->request_target   = $this->request_target . $this->Uri->getQuery();
+            $this->request_target   = $this->request_target . ($this->Uri->getFragment() ? '#' : '');
+            $this->request_target   = $this->request_target . $this->Uri->getFragment();
         }
 
         return '/' . ltrim($this->request_target, '/');
@@ -47,7 +54,7 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::getMethod()
+     * @see RequestInterface::getMethod()
      *
      * @return string
      */
@@ -59,11 +66,11 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::getUri()
+     * @see RequestInterface::getUri()
      *
-     * @return PsrUriInterface
+     * @return UriInterface
      */
-    public function getUri() : PsrUriInterface
+    public function getUri() : UriInterface
     {
         return $this->Uri;
     }
@@ -71,13 +78,13 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::withUri()
+     * @see RequestInterface::withUri()
      *
-     * @param PsrUriInterface $Uri
+     * @param UriInterface $Uri
      * @param bool $preserve_host
-     * @return PsrRequestInterface
+     * @return RequestInterface
      */
-    public function withUri(PsrUriInterface $Uri, bool $preserve_host = false) : PsrRequestInterface
+    public function withUri(UriInterface $Uri, /*bool*/ $preserve_host = false) : RequestInterface
     {
         $New    = clone $this;
         $New->Uri   = $Uri;
@@ -97,12 +104,12 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::withRequestTarget()
+     * @see RequestInterface::withRequestTarget()
      *
      * @param string $target
-     * @return PsrRequestInterface
+     * @return RequestInterface
      */
-    public function withRequestTarget(string $target) : PsrRequestInterface
+    public function withRequestTarget(/*string*/ $target) : RequestInterface
     {
         $New                    = clone $this;
         $New->request_target    = $target;
@@ -112,12 +119,12 @@ trait RequestTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrRequestInterface::withMethod()
+     * @see RequestInterface::withMethod()
      *
      * @param string $method
-     * @return PsrRequestInterface
+     * @return RequestInterface
      */
-    public function withMethod(string $method): PsrRequestInterface
+    public function withMethod(/*string*/ $method): RequestInterface
     {
         $New            = clone $this;
         $New->method    = $method;

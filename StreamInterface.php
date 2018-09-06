@@ -1,7 +1,7 @@
 <?php
 namespace asbamboo\http;
 
-use asbamboo\http\psr\PsrStreamInterface;
+use Psr\Http\Message\StreamInterface AS BaseStreamInterface;
 
 /**
  * 继承遵守psr规则的StreamInterface，并在此基础上扩展
@@ -9,6 +9,4 @@ use asbamboo\http\psr\PsrStreamInterface;
  * @author 李春寅 <licy2013@aliyun.com>
  * @since 2018年3月17日
  */
-interface StreamInterface extends PsrStreamInterface
-{
-}
+interface StreamInterface extends BaseStreamInterface{}

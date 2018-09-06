@@ -15,7 +15,8 @@
     },
     "require": {
         "php": "^7.2",
-        "asbamboo/autoload": "^1.0"
+        "asbamboo/autoload": "^1.0",
+        "psr/http-message": "^1.0"
     },
     "prefer-stable": true,
     "minimum-stability": "dev"
