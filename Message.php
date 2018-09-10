@@ -1,7 +1,7 @@
 <?php
 namespace asbamboo\http;
 
-use asbamboo\http\traits\MessageTrait;
+use asbamboo\http\psr\Message AS BaseMessage;
 
 /**
  * 实现MessageInterface
@@ -9,20 +9,4 @@ use asbamboo\http\traits\MessageTrait;
  * @author 李春寅 <licy2013@aliyun.com>
  * @since 2018年3月17日
  */
-class Message implements MessageInterface
-{
-    use MessageTrait;
-
-    /**
-     *
-     * @param StreamInterface $Body
-     * @param array $headers
-     * @param string $version
-     */
-    public function __construct(StreamInterface $Body, array $headers = []/*[]*/, string $version = '1.1')
-    {
-        $this->version  = $version;
-        $this->Body     = $Body;
-        $this->headers  = $headers;
-    }
-}
+class Message extends BaseMessage implements MessageInterface{}

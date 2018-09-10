@@ -4,6 +4,7 @@ namespace asbamboo\http\_test;
 use PHPUnit\Framework\TestCase;
 use asbamboo\http\Uri;
 use asbamboo\http\Request;
+use asbamboo\http\Constant;
 
 /**
  * Test Request
@@ -32,11 +33,11 @@ class RequestTest extends TestCase
     {
         $Uri        = new Uri("http://username:password@hostname:80/path?arg1=value1&arg2=value2#anchor");
         $Request    = new Request($Uri);
-        $this->assertEquals(Request::METHOD_GET, $Request->getMethod());
+        $this->assertEquals(Constant::METHOD_GET, $Request->getMethod());
 
         $Uri        = new Uri("http://username:password@hostname:80/path?arg1=value1&arg2=value2#anchor");
-        $Request    = new Request($Uri, null, Request::METHOD_POST);
-        $this->assertEquals(Request::METHOD_POST, $Request->getMethod());
+        $Request    = new Request($Uri, null, Constant::METHOD_POST);
+        $this->assertEquals(Constant::METHOD_POST, $Request->getMethod());
     }
 
     public function testGetUri()
@@ -99,8 +100,8 @@ class RequestTest extends TestCase
     {
         $Uri        = new Uri("http://username:password@hostname:80/path?arg1=value1&arg2=value2#anchor");
         $Request    = new Request($Uri);
-        $New        = $Request->withMethod(Request::METHOD_OPTIONS);
-        $this->assertEquals(Request::METHOD_GET, $Request->getMethod());
-        $this->assertEquals(Request::METHOD_OPTIONS, $New->getMethod());
+        $New        = $Request->withMethod(Constant::METHOD_OPTIONS);
+        $this->assertEquals(Constant::METHOD_GET, $Request->getMethod());
+        $this->assertEquals(Constant::METHOD_OPTIONS, $New->getMethod());
     }
 }

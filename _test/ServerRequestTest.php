@@ -3,7 +3,6 @@ namespace asbamboo\http\_test;
 
 use PHPUnit\Framework\TestCase;
 use asbamboo\http\ServerRequest;
-use asbamboo\http\Stream;
 
 /**
  * test ServerRequest
@@ -51,6 +50,16 @@ class ServerRequestTest extends TestCase
         return $ServerRequest;
     }
 
+    public function testGetCookieParam()
+    {
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals($_COOKIE, $ServerRequest->getCookieParams());
+        $_COOKIE['test']        = 'test';
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('test', $ServerRequest->getCookieParam('test'));
+        return $ServerRequest;
+    }
+
     public function testGetUploadedFiles()
     {
         $ServerRequest          = new ServerRequest();
@@ -86,15 +95,71 @@ class ServerRequestTest extends TestCase
         return $ServerRequest;
     }
 
-    public function testGetParsedBody()
+    public function testGetQueryParam()
     {
         $ServerRequest          = new ServerRequest();
-        $this->assertInstanceOf(Stream::class, $ServerRequest->getParsedBody());
-        $this->assertEquals('', $ServerRequest->getParsedBody());
-
+        $this->assertEquals('default', $ServerRequest->getQueryParam('default','default'));
+        $_GET['arg1']           = 'val1';
+        $_GET['arg2']           = 'val2';
         $ServerRequest          = new ServerRequest();
+        $this->assertEquals('val1', $ServerRequest->getQueryParam('arg1'));
+        $this->assertEquals('val2', $ServerRequest->getQueryParam('arg2'));
+        return $ServerRequest;
+    }
+
+    public function testGetRequestParams()
+    {
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals([], $ServerRequest->getRequestParams());
+        $_REQUEST['arg1']          = 'val1';
+        $_REQUEST['arg2']          = 'val2';
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('val1', $ServerRequest->getRequestParams()['arg1']);
+        $this->assertEquals('val2', $ServerRequest->getRequestParams()['arg2']);
+        return $ServerRequest;
+    }
+
+    public function testGetRequestParam()
+    {
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('default', $ServerRequest->getRequestParam('default','default'));
+        $_REQUEST['arg1']          = 'val1';
+        $_REQUEST['arg2']          = 'val2';
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('val1', $ServerRequest->getRequestParam('arg1'));
+        $this->assertEquals('val2', $ServerRequest->getRequestParam('arg2'));
+        return $ServerRequest;
+    }
+
+    public function testGetPostParams()
+    {
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals([], $ServerRequest->getPostParams());
+        $_POST['arg1']          = 'val1';
+        $_POST['arg2']          = 'val2';
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('val1', $ServerRequest->getPostParams()['arg1']);
+        $this->assertEquals('val2', $ServerRequest->getPostParams()['arg2']);
+        return $ServerRequest;
+    }
+
+    public function testGetPostParam()
+    {
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('default', $ServerRequest->getPostParam('default','default'));
+        $_POST['arg1']          = 'val1';
+        $_POST['arg2']          = 'val2';
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals('val1', $ServerRequest->getPostParam('arg1'));
+        $this->assertEquals('val2', $ServerRequest->getPostParam('arg2'));
+        return $ServerRequest;
+    }
+
+    public function testGetParsedBody()
+    {
         $_POST['test']          = '2121';
-        $this->assertEquals(['test'=>'2121'], $ServerRequest->getParsedBody());
+        $ServerRequest          = new ServerRequest();
+        $this->assertEquals($_POST, $ServerRequest->getParsedBody());
 
         return $ServerRequest;
     }
@@ -162,7 +227,7 @@ class ServerRequestTest extends TestCase
     public function testWithParsedBody(ServerRequest $ServerRequest)
     {
         $New    = $ServerRequest->withParsedBody(['body'=>'withParsedBody']);
-        $this->assertEquals(['test'=>'2121'], $ServerRequest->getParsedBody());
+        $this->assertEquals($_POST, $ServerRequest->getParsedBody());
         $this->assertEquals(['body'=>'withParsedBody'], $New->getParsedBody());
     }
 

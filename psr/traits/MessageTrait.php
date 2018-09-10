@@ -1,11 +1,14 @@
 <?php
-namespace asbamboo\http\traits;
+namespace asbamboo\http\psr\traits;
 
-use asbamboo\http\psr\PsrMessageInterface;
-use asbamboo\http\psr\PsrStreamInterface;
-use asbamboo\http\StreamInterface;
-use asbamboo\http\exception\InvalidStreamException;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
 
+/**
+ *
+ * @author 李春寅 <licy2013@aliyun.com>
+ * @since 2018年9月6日
+ */
 trait MessageTrait
 {
     /**
@@ -22,14 +25,14 @@ trait MessageTrait
 
     /**
      *
-     * @var PsrStreamInterface
+     * @var StreamInterface
      */
     protected $Body;
 
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::getProtocolVersion()
+     * @see MessageInterface::getProtocolVersion()
      *
      * @return string
      */
@@ -41,12 +44,12 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::hasHeader()
+     * @see MessageInterface::hasHeader()
      *
      * @param string $name
      * @return bool
      */
-    public function hasHeader(string $name): bool
+    public function hasHeader(/*string*/ $name): bool
     {
         $name   = strtolower($name);
         return array_key_exists($name, $this->headers);
@@ -55,12 +58,12 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::getHeader()
+     * @see MessageInterface::getHeader()
      *
      * @param string $name
      * @return array
      */
-    public function getHeader(string $name) : array
+    public function getHeader(/*string*/ $name) : array
     {
         $name   = strtolower($name);
         return $this->headers[$name] ?? [];
@@ -69,7 +72,7 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::getHeaders()
+     * @see MessageInterface::getHeaders()
      *
      * @return array
      */
@@ -81,12 +84,12 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::getHeaderLine()
+     * @see MessageInterface::getHeaderLine()
      *
      * @param string $name
      * @return string
      */
-    public function getHeaderLine(string $name): string
+    public function getHeaderLine(/*string*/ $name): string
     {
         return implode(',', $this->getHeader($name));
     }
@@ -94,11 +97,11 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\MessageInterface::getBody()
+     * @see MessageInterface::getBody()
      *
-     * @return PsrStreamInterface
+     * @return StreamInterface
      */
-    public function getBody() : PsrStreamInterface
+    public function getBody() : StreamInterface
     {
         return $this->Body;
     }
@@ -106,12 +109,12 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::withProtocolVersion()
+     * @see MessageInterface::withProtocolVersion()
      *
      * @param string $version
-     * @return PsrMessageInterface
+     * @return MessageInterface
      */
-    public function withProtocolVersion(string $version) : PsrMessageInterface
+    public function withProtocolVersion(/*string*/ $version) : MessageInterface
     {
         $New            = clone $this;
         $New->version   = $version;
@@ -121,13 +124,13 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::withHeader()
+     * @see MessageInterface::withHeader()
      *
      * @param string $name
      * @param array|string $value
-     * @return PsrMessageInterface
+     * @return MessageInterface
      */
-    public function withHeader(string $name, /*array|string*/$value) : PsrMessageInterface
+    public function withHeader(/*string*/ $name, /*array|string*/$value) : MessageInterface
     {
         $name       = strtolower($name);
         $value      = (array) $value;
@@ -140,13 +143,13 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::withAddedHeader()
+     * @see MessageInterface::withAddedHeader()
      *
      * @param string $name
      * @param array|string $value
-     * @return PsrMessageInterface
+     * @return MessageInterface
      */
-    public function withAddedHeader(string $name, /*array|string*/$value) : PsrMessageInterface
+    public function withAddedHeader(/*string*/ $name, /*array|string*/$value) : MessageInterface
     {
         $name       = strtolower($name);
         $value      = (array) $value;
@@ -162,12 +165,12 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::withoutHeader()
+     * @see MessageInterface::withoutHeader()
      *
      * @param string $name
-     * @return PsrMessageInterface
+     * @return MessageInterface
      */
-    public function withoutHeader(string $name) : PsrMessageInterface
+    public function withoutHeader(/*string*/ $name) : MessageInterface
     {
         $name       = strtolower($name);
 
@@ -179,17 +182,13 @@ trait MessageTrait
     /**
      *
      * {@inheritDoc}
-     * @see \asbamboo\http\psr\PsrMessageInterface::withBody()
+     * @see MessageInterface::withBody()
      *
-     * @param PsrStreamInterface $Body
-     * @return PsrMessageInterface
+     * @param StreamInterface $Body
+     * @return MessageInterface
      */
-    public function withBody(PsrStreamInterface $Body) : PsrMessageInterface
+    public function withBody(StreamInterface $Body) : MessageInterface
     {
-        if(! $Body instanceof StreamInterface){
-            throw new InvalidStreamException('无效的Body参数.');
-        }
-
         $New        = clone $this;
         $New->Body  = $Body;
         return $New;

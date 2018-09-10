@@ -4,6 +4,7 @@ namespace asbamboo\http\_test;
 use PHPUnit\Framework\TestCase;
 use asbamboo\http\Response;
 use asbamboo\http\Stream;
+use asbamboo\http\Constant;
 
 /**
  * test Response
@@ -17,7 +18,7 @@ class ResponseTest extends TestCase
     {
         $Body       = new Stream('php://temp', 'w+b');
         $Response   = new Response($Body);
-        $this->assertEquals(Response::STATUS_OK, $Response->getStatusCode());
+        $this->assertEquals(Constant::STATUS_OK, $Response->getStatusCode());
 
         return $Response;
     }
@@ -37,16 +38,39 @@ class ResponseTest extends TestCase
      */
     public function testWithStatus(Response $Response)
     {
-        $New1   = $Response->withStatus(Response::STATUS_NO_CONTENT);
-        $this->assertEquals(Response::STATUS_OK, $Response->getStatusCode());
+        $New1   = $Response->withStatus(Constant::STATUS_NO_CONTENT);
+        $this->assertEquals(Constant::STATUS_OK, $Response->getStatusCode());
         $this->assertEquals('OK', $Response->getReasonPhrase());
-        $this->assertEquals(Response::STATUS_NO_CONTENT, $New1->getStatusCode());
+        $this->assertEquals(Constant::STATUS_NO_CONTENT, $New1->getStatusCode());
         $this->assertEquals('No Content', $New1->getReasonPhrase());
 
-        $New2   = $Response->withStatus(Response::STATUS_NO_CONTENT, '没有内容');
-        $this->assertEquals(Response::STATUS_OK, $Response->getStatusCode());
+        $New2   = $Response->withStatus(Constant::STATUS_NO_CONTENT, '没有内容');
+        $this->assertEquals(Constant::STATUS_OK, $Response->getStatusCode());
         $this->assertEquals('OK', $Response->getReasonPhrase());
-        $this->assertEquals(Response::STATUS_NO_CONTENT, $New2->getStatusCode());
+        $this->assertEquals(Constant::STATUS_NO_CONTENT, $New2->getStatusCode());
         $this->assertEquals('没有内容', $New2->getReasonPhrase());
+
+        return $Response;
+    }
+
+    /**
+     * @depends testWithStatus
+     */
+    public function testAddHeader(Response $Response)
+    {
+        $Response->addHeader('tESt', 'test');
+        $this->assertEquals(['test'], $Response->getHeader('test'));
+        return $Response;
+    }
+
+    /**
+     * @depends testAddHeader
+     */
+    public function testSetBody(Response $Response)
+    {
+        $Body       = new Stream('php://temp', 'w+b');
+        $Response->setBody($Body);
+        $this->assertEquals($Body, $Response->getBody());
+        return $Response;
     }
 }
