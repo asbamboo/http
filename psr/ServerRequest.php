@@ -58,7 +58,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function __construct()
     {
-        $uri            = $this->getServerParams()['REQUEST_URI'];
+        $uri            = $this->getServerParams()['REQUEST_URI']??'';
         $this->Uri      = new Uri($uri);
         if(isset($this->getServerParams()['REQUEST_METHOD'])){
             $this->method   = $this->getServerParams()['REQUEST_METHOD'];
