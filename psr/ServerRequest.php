@@ -6,6 +6,7 @@ use asbamboo\http\exception\InvalidServerRequestParseBodyArgumentException;
 use asbamboo\http\psr\traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use asbamboo\http\Constant;
 
 /**
  * 实现ServerRequestInterface
@@ -62,6 +63,8 @@ class ServerRequest implements ServerRequestInterface
         $this->Uri      = new Uri($uri);
         if(isset($this->getServerParams()['REQUEST_METHOD'])){
             $this->method   = $this->getServerParams()['REQUEST_METHOD'];
+        }else{
+            $this->method   = Constant::METHOD_GET;
         }
     }
 
