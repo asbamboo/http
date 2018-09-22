@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "8092ebf2e93e431b99ed071b49396ed6",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/asbamboo/autoload.git",
-                "reference": "2086af558e3c8eeebeec73b0fe0a7b9b5d339786"
+                "reference": "22d858733c9ec1d52f3b823ea24dd94803ac63c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/asbamboo/autoload/zipball/2086af558e3c8eeebeec73b0fe0a7b9b5d339786",
-                "reference": "2086af558e3c8eeebeec73b0fe0a7b9b5d339786",
+                "url": "https://api.github.com/repos/asbamboo/autoload/zipball/22d858733c9ec1d52f3b823ea24dd94803ac63c2",
+                "reference": "22d858733c9ec1d52f3b823ea24dd94803ac63c2",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 "source": "https://github.com/asbamboo/autoload/tree/1.0.0",
                 "issues": "https://github.com/asbamboo/autoload/issues"
             },
-            "time": "2018-09-10T06:46:25+00:00"
+            "time": "2018-09-11T10:02:19+00:00"
         },
         {
             "name": "psr/http-message",

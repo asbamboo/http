@@ -54,6 +54,7 @@ class RedirectResponse extends Response
             </html>',
             htmlspecialchars($target_uri, ENT_QUOTES, 'UTF-8')
         ));
+        $this->getBody()->rewind();
         return $this;
     }
 
