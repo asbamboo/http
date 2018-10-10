@@ -66,9 +66,9 @@ class Client implements ClientInterface
 
         $this->setBodyCurlOpt($Request);
 
-        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_PRE_EXEC, $this, $Request);
+        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_PRE_EXEC, $this, $this->curl, $Request, $this->Response);
         curl_exec($this->curl);
-        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_AFTER_EXEC, $this, $Request);
+        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_AFTER_EXEC, $this, $this->curl, $Request, $this->Response);
 
         if(curl_errno($this->curl)){
             throw new ClientException('请求失败:' . curl_error($this->curl));
