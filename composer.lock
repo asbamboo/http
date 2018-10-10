@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "3f7805fd79a39e00d7564e12e70cfd26",
@@ -42,7 +42,7 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/asbamboo/autoload/tree/v1.0.0",
+                "source": "https://github.com/asbamboo/autoload/tree/1.0.0",
                 "issues": "https://github.com/asbamboo/autoload/issues"
             },
             "time": "2018-09-11T10:02:19+00:00"
@@ -80,7 +80,7 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/asbamboo/event/tree/v1.0.0",
+                "source": "https://github.com/asbamboo/event/tree/1.0.0",
                 "issues": "https://github.com/asbamboo/event/issues"
             },
             "time": "2018-09-10T06:50:39+00:00"
@@ -117,7 +117,7 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/asbamboo/helper/tree/v1.0.0",
+                "source": "https://github.com/asbamboo/helper/tree/1.0.0",
                 "issues": "https://github.com/asbamboo/helper/issues"
             },
             "time": "2018-09-10T05:51:30+00:00"
