@@ -2,6 +2,7 @@
 namespace asbamboo\http;
 
 use asbamboo\http\exception\ClientException;
+use asbamboo\event\EventScheduler;
 
 /**
  *
@@ -65,7 +66,10 @@ class Client implements ClientInterface
 
         $this->setBodyCurlOpt($Request);
 
+        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_PRE_EXEC, $this, $Request);
         curl_exec($this->curl);
+        EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_AFTER_EXEC, $this, $Request);
+
         if(curl_errno($this->curl)){
             throw new ClientException('请求失败:' . curl_error($this->curl));
         }
