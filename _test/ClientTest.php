@@ -6,6 +6,7 @@ use asbamboo\http\Client;
 use asbamboo\http\Request;
 use asbamboo\http\psr\Uri;
 use asbamboo\http\ResponseInterface;
+use asbamboo\http\ClientInterface;
 
 /**
  *
@@ -26,5 +27,20 @@ class ClientTest extends TestCase
 //         var_dump((string) $Response->getBody());
 
         $this->assertInstanceOf(ResponseInterface::class, $Response);
+    }
+
+    public function testSetOption()
+    {
+        $Client     = new Client();
+        $this->assertInstanceOf(ClientInterface::class, $Client->setOption([CURLOPT_TIMEOUT=>20]));
+        return $Client;
+    }
+
+    /**
+     * @depends testSetOption
+     */
+    public function testGetOption($Client)
+    {
+        $this->assertEquals([CURLOPT_TIMEOUT=>20], $Client->getOption());
     }
 }
