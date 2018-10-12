@@ -23,13 +23,26 @@ class Client implements ClientInterface
     private $curl;
 
     /**
+     * 设置一些自定义的curl选项信息
+     * 优先级。
+     * Request对象中的选项 > 调用 setOption设置的选项 > 类中默认的选项.
+     *
+     * @var array
+     */
+    private $option;
+
+    /**
      * - 初始化响应实例
      * - 初始化curl客户端资源
      */
     public function __construct()
     {
-        $this->Response = new Response(new Stream('php://temp', 'w+b'));
-        $this->curl     = curl_init();
+        $this->curl                             = curl_init();
+
+        $this->option[CURLOPT_HEADER]           = false;
+        $this->option[CURLOPT_RETURNTRANSFER]   = false;
+        $this->option[CURLOPT_FOLLOWLOCATION]   = true;
+        $this->option[CURLOPT_MAXREDIRS]        = 3;
     }
 
     /**
@@ -49,22 +62,21 @@ class Client implements ClientInterface
     {
         curl_reset($this->curl);
 
-        curl_setopt($this->curl, CURLOPT_URL, (string) $Request->getUri());
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $Request->getMethod());
-        curl_setopt($this->curl, CURLOPT_HEADER, false);
-        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, false);
-        curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($this->curl, CURLOPT_MAXREDIRS, 3);
-        curl_setopt($this->curl, CURLOPT_HTTP_VERSION, $this->getCurloptHttpVersion($Request));
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->getCurloptHttpHeader($Request));
-        curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, $this->getCurloptHeaderFunction());
-        curl_setopt($this->curl, CURLOPT_WRITEFUNCTION, $this->getCurloptWriteFunction());
+        $this->Response                         = new Response(new Stream('php://temp', 'w+b'));
+        $this->option[CURLOPT_URL]              = (string) $Request->getUri();
+        $this->option[CURLOPT_CUSTOMREQUEST]    = $Request->getMethod();
+        $this->option[CURLOPT_HTTP_VERSION]     = $this->getCurloptHttpVersion($Request);
+        $this->option[CURLOPT_HTTPHEADER]       = $this->getCurloptHttpHeader($Request);
+        $this->option[CURLOPT_HEADERFUNCTION]   = $this->getCurloptHeaderFunction();
+        $this->option[CURLOPT_WRITEFUNCTION]    = $this->getCurloptWriteFunction();
 
         if($Request->getUri()->getUserInfo()){
-            curl_setopt($this->curl, CURLOPT_USERPWD, $Request->getUri()->getUserInfo());
+            $this->option[CURLOPT_USERPWD]  = $Request->getUri()->getUserInfo();
         }
 
         $this->setBodyCurlOpt($Request);
+
+        curl_setopt_array($this->curl, $this->getOption());
 
         EventScheduler::instance()->trigger(Event::HTTP_CLIENT_SEND_PRE_EXEC, [$this, $this->curl, $Request, $this->Response]);
         curl_exec($this->curl);
@@ -77,6 +89,29 @@ class Client implements ClientInterface
         $this->Response->getBody()->rewind();
 
         return $this->Response;
+    }
+
+    /**
+     * curl option
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ClientInterface::setOption()
+     */
+    public function setOption(array $option = []) : ClientInterface
+    {
+        $this->option   = $option;
+        return $this;
+    }
+
+    /**
+     * curl option
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ClientInterface::getOption()
+     */
+    public function getOption() : array
+    {
+        return $this->option;
     }
 
     /**
@@ -106,23 +141,23 @@ class Client implements ClientInterface
                 // Message has non empty body.
                 if(null === $body_size || $body_size > 1024 * 1024){
                     // Avoid full loading large or unknown size body into memory
-                    curl_setopt($this->curl, CURLOPT_UPLOAD, true);
+                    $this->option[CURLOPT_UPLOAD] = true;
                     if(null !== $body_size){
-                        curl_setopt($this->curl, CURLOPT_INFILESIZE, $body_size);
+                        $this->option[CURLOPT_INFILESIZE] = $body_size;
                     }
-                    curl_setopt($this->curl, CURLOPT_READFUNCTION, function($ch, $fd, $length)use($Body){
-                        return $Body->read($Body);
-                    });
+                    $this->option[CURLOPT_READFUNCTION] = function($ch, $fd, $length)use($Body){
+                        return $Body->read($length);
+                    };
                 }else{
                     // Small body can be loaded into memory
-                    curl_setopt($this->curl, CURLOPT_POSTFIELDS, (string) $Body);
+                    $this->option[CURLOPT_POSTFIELDS] = (string) $Body;
                 }
             }
         }
 
         if($Request->getMethod() === Constant::METHOD_HEAD){
             // This will set HTTP method to "HEAD".
-            curl_setopt($this->curl, CURLOPT_NOBODY, true);
+            $this->option[CURLOPT_NOBODY] = true;
         }
     }
 
