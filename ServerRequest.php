@@ -27,6 +27,38 @@ class ServerRequest extends BaseServerRequest implements ServerRequestInterface
     /**
      *
      * {@inheritDoc}
+     * @see \asbamboo\http\ServerRequestInterface::getClientIp()
+     */
+    public function getClientIp() : string
+    {
+        $forwarded_ips  = [];
+        if($this->hasHeader('FORWARDED')){
+            $forwarded_header   = $this->getHeaderLine('FORWARDED');
+            preg_match_all('@(for)=("?\[?)([a-z0-9\.:_\-/]*)@', $forwarded_header, $matches);
+            $forwarded_ips  = $matches[3];
+        }else if($this->hasHeader('X_FORWARDED_FOR')){
+            $forwarded_ips  = array_map('trim', $this->getHeader('X_FORWARDED_FOR'));
+        }
+
+        if(!empty($forwarded_ips)){
+            $forwarded_ips      = array_reverse($forwarded_ips);
+            foreach($forwarded_ips AS $ip){
+                // Remove port (unfortunately, it does happen)
+                if(preg_match('@((?:\d+\.){3}\d+)\:\d+@', $ip, $match)) {
+                    $ip  = $match[1];
+                }
+                if(filter_var($ip, FILTER_VALIDATE_IP)){
+                    return $ip;
+                }
+            }
+        }
+
+        return $this->getServerParams()['REMOTE_ADDR'];
+    }
+
+    /**
+     *
+     * {@inheritDoc}
      * @see \asbamboo\http\ServerRequestInterface::getCookieParam()
      */
     public function getCookieParam(string $key, $default = null)

@@ -12,6 +12,13 @@ use Psr\Http\Message\ServerRequestInterface AS BaseServerRequestInterface;
 interface ServerRequestInterface extends BaseServerRequestInterface
 {
     /**
+     * 获取客户端的ipv4地址
+     *
+     * @return string
+     */
+    public function getClientIp() : string;
+
+    /**
      * 获取[self::getCookieParams()]中的一个key
      *
      * @return string $key 参数的键名

@@ -12,8 +12,37 @@ use asbamboo\http\ServerRequest;
  */
 class ServerRequestTest extends TestCase
 {
-    public function setUp(){
+    public $org_server;
+
+    public function setUp()
+    {
+        $this->org_server       = $_SERVER;
         $_SERVER['REQUEST_URI'] = "http://username:password@hostname:80/path?arg1=value1&arg2=value2#anchor";
+    }
+
+    public function teardown()
+    {
+        $_SERVER    = $this->org_server;
+    }
+
+    public function testGetClientIp()
+    {
+        $_SERVER['REMOTE_ADDR'] = '123.123.123.123';
+        $ServerRequest          = new ServerRequest();
+
+        $this->assertEquals($_SERVER['REMOTE_ADDR'], $ServerRequest->getClientIp());
+
+        $ServerRequest          = new ServerRequest();
+        $ServerRequest          = $ServerRequest->withHeader('X_FORWARDED_FOR', ['123.123.123.1', '123.123.123.2', '123.123.123.3']);
+        $this->assertEquals('123.123.123.3', $ServerRequest->getClientIp());
+
+        $ServerRequest          = new ServerRequest();
+        $ServerRequest          = $ServerRequest->withHeader('FORWARDED', 'for=123.123.123.1');
+        $this->assertEquals('123.123.123.1', $ServerRequest->getClientIp());
+
+        $ServerRequest          = new ServerRequest();
+        $ServerRequest          = $ServerRequest->withHeader('FORWARDED', 'for=123.123.123.2:808');
+        $this->assertEquals('123.123.123.2', $ServerRequest->getClientIp());
     }
 
     public function testGetServerParams()
