@@ -65,8 +65,11 @@ trait MessageTrait
      */
     public function getHeader(/*string*/ $name) : array
     {
+        if(isset($this->headers[$name])){
+            return (array) $this->headers[$name];
+        };
         $name   = strtolower($name);
-        return $this->headers[$name] ?? [];
+        return (array) ($this->headers[$name] ?? []);
     }
 
     /**

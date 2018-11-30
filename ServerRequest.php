@@ -59,6 +59,16 @@ class ServerRequest extends BaseServerRequest implements ServerRequestInterface
     /**
      *
      * {@inheritDoc}
+     * @see \asbamboo\http\ServerRequestInterface::isAjaxRequest()
+     */
+    public function isAjaxRequest() : bool
+    {
+        return in_array('XMLHttpRequest', $this->getHeader('X_REQUESTED_WITH'));
+    }
+
+    /**
+     *
+     * {@inheritDoc}
      * @see \asbamboo\http\ServerRequestInterface::getCookieParam()
      */
     public function getCookieParam(string $key, $default = null)
