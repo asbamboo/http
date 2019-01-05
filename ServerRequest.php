@@ -38,8 +38,6 @@ class ServerRequest extends BaseServerRequest implements ServerRequestInterface
             $forwarded_ips  = $matches[3];
         }else if($this->hasHeader('X_FORWARDED_FOR')){
             $forwarded_ips  = array_map('trim', $this->getHeader('X_FORWARDED_FOR'));
-        }else if($this->hasHeader('HTTP_X_FORWARDED_FOR')){
-            $forwarded_ips  = array_map('trim', $this->getHeader('HTTP_X_FORWARDED_FOR'));
         }
 
         if(!empty($forwarded_ips)){
