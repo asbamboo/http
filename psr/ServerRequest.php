@@ -66,6 +66,8 @@ class ServerRequest implements ServerRequestInterface
         }else{
             $this->method   = Constant::METHOD_GET;
         }
+
+        $this->parseServerHeaders();
     }
 
     /**
@@ -274,5 +276,85 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $files;
+    }
+
+    /**
+     * 从server解析header
+     *
+     * @return array|string[]
+     */
+    private function parseServerHeaders()
+    {
+        $headers            = [];
+        $content_headers    = ['CONTENT_LENGTH' => true, 'CONTENT_MD5' => true, 'CONTENT_TYPE' => true];
+        foreach ($this->getServerParams() as $key => $value) {
+            if (0 === strpos($key, 'HTTP_')) {
+                $headers[substr($key, 5)] = $value;
+            }
+            // CONTENT_* are not prefixed with HTTP_
+            elseif (isset($content_headers[$key])) {
+                $headers[$key] = $value;
+            }
+        }
+
+        if (isset($this->getServerParams()['PHP_AUTH_USER'])) {
+            $headers['PHP_AUTH_USER']   = $this->getServerParams()['PHP_AUTH_USER'];
+            $headers['PHP_AUTH_PW']     = isset($this->getServerParams()['PHP_AUTH_PW']) ? $this->getServerParams()['PHP_AUTH_PW'] : '';
+        } else {
+            /*
+             * php-cgi under Apache does not pass HTTP Basic user/pass to PHP by default
+             * For this workaround to work, add these lines to your .htaccess file:
+             * RewriteCond %{HTTP:Authorization} ^(.+)$
+             * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+             *
+             * A sample .htaccess file:
+             * RewriteEngine On
+             * RewriteCond %{HTTP:Authorization} ^(.+)$
+             * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+             * RewriteCond %{REQUEST_FILENAME} !-f
+             * RewriteRule ^(.*)$ app.php [QSA,L]
+             */
+
+            $authorization_header = null;
+            if (isset($this->getServerParams()['HTTP_AUTHORIZATION'])) {
+                $authorization_header = $this->getServerParams()['HTTP_AUTHORIZATION'];
+            } elseif (isset($this->getServerParams()['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $authorization_header = $this->getServerParams()['REDIRECT_HTTP_AUTHORIZATION'];
+            }
+
+            if (null !== $authorization_header) {
+                if (0 === stripos($authorization_header, 'basic ')) {
+                    // Decode AUTHORIZATION header into PHP_AUTH_USER and PHP_AUTH_PW when authorization header is basic
+                    $exploded = explode(':', base64_decode(substr($authorization_header, 6)), 2);
+                    if (2 == count($exploded)) {
+                        list($headers['PHP_AUTH_USER'], $headers['PHP_AUTH_PW']) = $exploded;
+                    }
+                } elseif (empty($this->getServerParams()['PHP_AUTH_DIGEST']) && (0 === stripos($authorization_header, 'digest '))) {
+                    // In some circumstances PHP_AUTH_DIGEST needs to be set
+                    $headers['PHP_AUTH_DIGEST'] = $authorization_header;
+                    $this->getServerParams()['PHP_AUTH_DIGEST'] = $authorization_header;
+                } elseif (0 === stripos($authorization_header, 'bearer ')) {
+                    /*
+                     * XXX: Since there is no PHP_AUTH_BEARER in PHP predefined variables,
+                     *      I'll just set $headers['AUTHORIZATION'] here.
+                     *      http://php.net/manual/en/reserved.variables.server.php
+                     */
+                    $headers['AUTHORIZATION'] = $authorization_header;
+                }
+            }
+        }
+
+        if (isset($headers['AUTHORIZATION'])) {
+            return $headers;
+        }
+
+        // PHP_AUTH_USER/PHP_AUTH_PW
+        if (isset($headers['PHP_AUTH_USER'])) {
+            $headers['AUTHORIZATION'] = 'Basic '.base64_encode($headers['PHP_AUTH_USER'].':'.$headers['PHP_AUTH_PW']);
+        } elseif (isset($headers['PHP_AUTH_DIGEST'])) {
+            $headers['AUTHORIZATION'] = $headers['PHP_AUTH_DIGEST'];
+        }
+
+        $this->headers  = $headers;
     }
 }

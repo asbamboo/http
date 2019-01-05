@@ -38,6 +38,8 @@ class ServerRequest extends BaseServerRequest implements ServerRequestInterface
             $forwarded_ips  = $matches[3];
         }else if($this->hasHeader('X_FORWARDED_FOR')){
             $forwarded_ips  = array_map('trim', $this->getHeader('X_FORWARDED_FOR'));
+        }else if($this->hasHeader('HTTP_X_FORWARDED_FOR')){
+            $forwarded_ips  = array_map('trim', $this->getHeader('HTTP_X_FORWARDED_FOR'));
         }
 
         if(!empty($forwarded_ips)){
@@ -54,6 +56,16 @@ class ServerRequest extends BaseServerRequest implements ServerRequestInterface
         }
 
         return $this->getServerParams()['REMOTE_ADDR'];
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \asbamboo\http\ServerRequestInterface::isAjaxRequest()
+     */
+    public function isAjaxRequest() : bool
+    {
+        return in_array('XMLHttpRequest', $this->getHeader('X_REQUESTED_WITH'));
     }
 
     /**

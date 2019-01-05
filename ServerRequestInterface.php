@@ -19,6 +19,13 @@ interface ServerRequestInterface extends BaseServerRequestInterface
     public function getClientIp() : string;
 
     /**
+     * 返回这个请求是不是通过ajax方式请求
+     *
+     * @return bool
+     */
+    public function isAjaxRequest() : bool;
+
+    /**
      * 获取[self::getCookieParams()]中的一个key
      *
      * @return string $key 参数的键名
