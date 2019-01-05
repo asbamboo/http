@@ -289,17 +289,17 @@ class ServerRequest implements ServerRequestInterface
         $content_headers    = ['CONTENT_LENGTH' => true, 'CONTENT_MD5' => true, 'CONTENT_TYPE' => true];
         foreach ($this->getServerParams() as $key => $value) {
             if (0 === strpos($key, 'HTTP_')) {
-                $headers[substr($key, 5)] = $value;
+                $headers[strtolower(substr($key, 5))] = $value;
             }
             // CONTENT_* are not prefixed with HTTP_
             elseif (isset($content_headers[$key])) {
-                $headers[$key] = $value;
+                $headers[strtolower($key)] = $value;
             }
         }
 
         if (isset($this->getServerParams()['PHP_AUTH_USER'])) {
-            $headers['PHP_AUTH_USER']   = $this->getServerParams()['PHP_AUTH_USER'];
-            $headers['PHP_AUTH_PW']     = isset($this->getServerParams()['PHP_AUTH_PW']) ? $this->getServerParams()['PHP_AUTH_PW'] : '';
+            $headers['php_auth_user']   = $this->getServerParams()['PHP_AUTH_USER'];
+            $headers['php_auth_pw']     = isset($this->getServerParams()['PHP_AUTH_PW']) ? $this->getServerParams()['PHP_AUTH_PW'] : '';
         } else {
             /*
              * php-cgi under Apache does not pass HTTP Basic user/pass to PHP by default
@@ -327,11 +327,11 @@ class ServerRequest implements ServerRequestInterface
                     // Decode AUTHORIZATION header into PHP_AUTH_USER and PHP_AUTH_PW when authorization header is basic
                     $exploded = explode(':', base64_decode(substr($authorization_header, 6)), 2);
                     if (2 == count($exploded)) {
-                        list($headers['PHP_AUTH_USER'], $headers['PHP_AUTH_PW']) = $exploded;
+                        list($headers['php_auth_user'], $headers['php_auth_pw']) = $exploded;
                     }
                 } elseif (empty($this->getServerParams()['PHP_AUTH_DIGEST']) && (0 === stripos($authorization_header, 'digest '))) {
                     // In some circumstances PHP_AUTH_DIGEST needs to be set
-                    $headers['PHP_AUTH_DIGEST'] = $authorization_header;
+                    $headers['php_auth_digest'] = $authorization_header;
                     $this->getServerParams()['PHP_AUTH_DIGEST'] = $authorization_header;
                 } elseif (0 === stripos($authorization_header, 'bearer ')) {
                     /*
@@ -339,20 +339,20 @@ class ServerRequest implements ServerRequestInterface
                      *      I'll just set $headers['AUTHORIZATION'] here.
                      *      http://php.net/manual/en/reserved.variables.server.php
                      */
-                    $headers['AUTHORIZATION'] = $authorization_header;
+                    $headers['authorization'] = $authorization_header;
                 }
             }
         }
 
-        if (isset($headers['AUTHORIZATION'])) {
+        if (isset($headers['authorization'])) {
             return $headers;
         }
 
         // PHP_AUTH_USER/PHP_AUTH_PW
-        if (isset($headers['PHP_AUTH_USER'])) {
-            $headers['AUTHORIZATION'] = 'Basic '.base64_encode($headers['PHP_AUTH_USER'].':'.$headers['PHP_AUTH_PW']);
-        } elseif (isset($headers['PHP_AUTH_DIGEST'])) {
-            $headers['AUTHORIZATION'] = $headers['PHP_AUTH_DIGEST'];
+        if (isset($headers['php_auth_user'])) {
+            $headers['authorization'] = 'Basic '.base64_encode($headers['php_auth_user'].':'.$headers['php_auth_pw']);
+        } elseif (isset($headers['php_auth_digest'])) {
+            $headers['authorization'] = $headers['php_auth_digest'];
         }
 
         $this->headers  = $headers;
