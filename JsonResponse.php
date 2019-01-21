@@ -20,7 +20,7 @@ class JsonResponse extends Response
         $this->status_code  = $status_code;
         $this->version      = $version;
         $this->addHeader('content-type', 'application/json');
-        $this->setBody(new Stream('php://temp', 'w+b'))->getBody()->write(json_encode($data));
+        $this->setBody(new Stream('php://temp', 'w+b'))->getBody()->write(json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
         $this->getBody()->rewind();
     }
 }
