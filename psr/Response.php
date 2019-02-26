@@ -133,7 +133,9 @@ class Response implements MessageInterface, ResponseInterface
                 Constant::STATUS_NETWORK_AUTHENTICATION_REQUIRED                              => 'Network Authentication Required',                             // RFC6585
             ][$this->getStatusCode()];
         }
-
+        if(empty($this->reason_phrase)){
+            $this->reason_phrase    = "System Error";
+        }
         return $this->reason_phrase;
     }
 
