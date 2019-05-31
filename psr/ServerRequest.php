@@ -61,12 +61,18 @@ class ServerRequest implements ServerRequestInterface
     {
         $uri            = $this->getServerParams()['REQUEST_URI']??'';
         $this->Uri      = new Uri($uri);
+        if(isset($this->getServerParams()['HTTP_HOST'])){
+            $this->Uri  = $this->Uri->withHost($this->getServerParams()['HTTP_HOST']);
+        }
+        if(isset($this->getServerParams()['REQUEST_SCHEME'])){
+            $this->Uri->withScheme($this->getServerParams()['REQUEST_SCHEME']);
+        }
         if(isset($this->getServerParams()['REQUEST_METHOD'])){
             $this->method   = $this->getServerParams()['REQUEST_METHOD'];
         }else{
             $this->method   = Constant::METHOD_GET;
         }
-
+        
         $this->parseServerHeaders();
     }
 
