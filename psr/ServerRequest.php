@@ -7,6 +7,7 @@ use asbamboo\http\psr\traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use asbamboo\http\Constant;
+use asbamboo\http\Stream;
 
 /**
  * 实现ServerRequestInterface
@@ -72,6 +73,8 @@ class ServerRequest implements ServerRequestInterface
         }else{
             $this->method   = Constant::METHOD_GET;
         }
+        
+        $this->Body = new Stream("php://input");
         
         $this->parseServerHeaders();
     }
