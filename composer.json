@@ -1,7 +1,6 @@
 {
     "name": "asbamboo/http",
     "type": "library",
-    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "李春寅",
@@ -10,8 +9,8 @@
     ],
     "require": {
         "php": "^7.2",
-        "asbamboo/autoload": "^1.0",
-        "asbamboo/event": "^1.0",
+        "asbamboo/autoload": "dev-master",
+        "asbamboo/event": "dev-master",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
